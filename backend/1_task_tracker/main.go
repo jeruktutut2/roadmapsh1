@@ -51,7 +51,9 @@ taskLoop:
 				continue taskLoop
 			}
 			defer file.Close()
-			description := strings.ReplaceAll(commands[1], `"`, ``)
+			startIndex := strings.Index(task, `"`)
+			lastIndex := strings.LastIndex(task, `"`)
+			description := task[startIndex+1 : lastIndex]
 			var id int
 			if len(taskTrackers) > 0 {
 				taskTracker := taskTrackers[len(taskTrackers)-1]
@@ -85,12 +87,15 @@ taskLoop:
 				fmt.Println("error when converting id from int to string:", err)
 				continue taskLoop
 			}
-			description := strings.ReplaceAll(commands[2], `"`, ``)
+			startIndex := strings.Index(task, `"`)
+			lastIndex := strings.LastIndex(task, `"`)
+			description := task[startIndex+1 : lastIndex]
 			isTaskExists := false
 		taskTrackerUpdateLoop:
 			for i := range taskTrackers {
 				if taskTrackers[i].Id == id {
 					taskTrackers[i].Description = description
+					taskTrackers[i].UpdatedAt = time.Now().String()
 					isTaskExists = true
 					break taskTrackerUpdateLoop
 				}
